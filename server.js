@@ -8,6 +8,9 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 // configure method override
 const methodOverride = require('method-override');
+const morgan = require('morgan');
+const cors = require('cors');
+
 
 // database configuration
 mongoose.connect(process.env.DATABASE_URL, {
