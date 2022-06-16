@@ -13,10 +13,8 @@ const cors = require('cors');
 
 
 // database configuration
-mongoose.connect(process.env.DATABASE_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+const {PORT, MONGODB_URL}= process.env;
+mongoose.connect(MONGODB_URL);
 
 // Database Connection Error / Success
 const db = mongoose.connection;
@@ -38,6 +36,10 @@ app.use(
     // configure method override
     app.use(methodOverride('_method'));
 
+    app.use(cors());  
+    app.use(morgan('dev'));
+    app.use(express.json());
+
 
 // Routes / Controllers
 const userController = require('./controllers/users');
@@ -45,23 +47,18 @@ app.use('/users', userController);
 // sessions controller
 const sessionsController = require('./controllers/sessions');
 app.use('/sessions', sessionsController);
+// job applications controller
+const jobsController = require('./controllers/jobs');
+app.use('/', jobsController);
 
 
 // INDEX with updated dashboard view
 app.get('/', (req, res) => {
-	if (req.session.currentUser) {
-		res.render('dashboard.ejs', {
-			currentUser: req.session.currentUser
-		});
-	} else {
-		res.render('index.ejs', {
-			currentUser: req.session.currentUser
-		});
-	}
+	res.send('hello world')
 });
 
 // LISTENER
-const PORT = process.env.PORT;
+
 app.listen(PORT, () => {
     console.log(`server is listening on port: ${PORT}`)
 })
