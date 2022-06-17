@@ -3,13 +3,13 @@ const express = require('express');
 const Job = require('../models/job.js');
 const jobsRouter = express.Router();
 
-
 //Routes
 
 // INDEX
 jobsRouter.get('/jobapplications', async (req, res) => {
     try {
-        const jobs = await Job.find({});
+        const googleId = req.user.uid;
+        const jobs = await Job.find({ googleId });
     res.json(jobs);
     } catch (error) {
         console.log('error: ', error);
@@ -21,6 +21,7 @@ jobsRouter.get('/jobapplications', async (req, res) => {
 // CREATE
 jobsRouter.post('/jobapplications', async (req, res) => {
     try {
+        req.body.googleId = req.user.uid;
         const job = await Job.create(req.body);
         res.json(job);
     } catch (error) {
