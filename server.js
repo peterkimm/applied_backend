@@ -6,8 +6,12 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
+const admin = require('firebase-admin');
 
 
+admin.initializeApp({
+  credential: admin.credential.cert(require("./firebase-service-key.json"))
+});
 // database configuration
 const { PORT, MONGODB_URL } = process.env;
 mongoose.connect(MONGODB_URL);
