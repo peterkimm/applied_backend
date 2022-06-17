@@ -11,7 +11,8 @@ const jobSchema = new mongoose.Schema({
     Salary: String,
     ContactInfo: String,
     Logo: String,
-    Contacted: String
+    Contacted: String,
+    googleId: String
 }, 
 {timestamps: true});
 

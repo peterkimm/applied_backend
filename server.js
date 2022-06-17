@@ -6,8 +6,12 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
+const admin = require('firebase-admin');
 
 
+admin.initializeApp({
+  credential: admin.credential.cert(require("./firebase-service-key.json"))
+});
 // database configuration
 const { PORT, MONGODB_URL } = process.env;
 mongoose.connect(MONGODB_URL);
@@ -25,16 +29,40 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+// authorization middleware
+app.use(async (req, res, next) => {
+    const token = req.get('Authorization');
+    if(token) {
+        try{
+            const user = await admin.auth().verifyIdToken(token.replace('Bearer ', ''));
+            req.user = user;
+         } catch (error) {
+             req.user = null;
+         }
+    } else {
+        req.user = null;
+    }
+    next();
+});
+// checking authentication of req.user
+function isAuthenticated(req, res, next) {
+    if(!req.user) {
+        return res.status(401).json({message: 'you must be logged in'});
+    } else {
+        return next();
+    }
+}
 
 // job applications controller
 const jobsController = require('./controllers/jobs');
-app.use('/', jobsController);
+app.use(isAuthenticated, jobsController);
 
 
 // INDEX with updated dashboard view
 app.get('/', (req, res) => {
     res.send('hello world')
 });
+
 
 // LISTENER
 
