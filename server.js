@@ -10,8 +10,16 @@ const admin = require('firebase-admin');
 
 
 admin.initializeApp({
-  credential: admin.credential.cert(require("./firebase-service-key.json"))
+  credential: admin.credential.cert({
+    "project_id": process.env.project_id,
+    "private_key": process.env.private_key,
+    "client_email": process.env.client_email,
+    "token_uri": process.env.token_uri
+  }),
+  databaseURL: process.env.MONGODB_URL
 });
+
+
 // database configuration
 const { PORT, MONGODB_URL } = process.env;
 mongoose.connect(MONGODB_URL);
